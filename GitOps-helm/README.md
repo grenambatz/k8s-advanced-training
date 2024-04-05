@@ -64,7 +64,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/$myuser/k8s-advanced-training.git'
-    targetRevision: feature-add-helm
+    targetRevision: ha
     path: 'Correction/GitOps-helm/sample-demo'
   syncPolicy:
     automated:
