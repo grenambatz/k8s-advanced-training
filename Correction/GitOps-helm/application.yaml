@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: declarative-gitops-chart
+  name: declarative-gitops-chart-ha
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: 'https://github.com/wescale/k8s-advanced-training.git'
     targetRevision: HEAD
-    path: 'GitOps-helm/sample-demo'
+    path: 'Correction/GitOps-helm/sample-demo'
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
   destination:
     server: https://kubernetes.default.svc
-    namespace: 'declarative-gitops'
+    namespace: 'declarative-gitops-ha'
