@@ -1,7 +1,10 @@
 # Manage HA with HELM 
 
+Connect to argocd UI: see last exercice.
 
-Modify Nginx default page with argoCD UI
+Go to your container with the UI, enter in exec in your container
+
+Modify Nginx default page
 
 ```sh
 echo '<h1> WeScale !!! </h1>' > /usr/share/nginx/html/index.html
@@ -9,31 +12,33 @@ echo '<h1> WeScale !!! </h1>' > /usr/share/nginx/html/index.html
 
 Kill you pod and look what happened ...
 
-
 > Your are not in HA
 
 ## Migrate to HA apps
 
+Prerequisite:
+- Have a github account
+
+TODO: 
 - Check => `sample-demo`.
 - Can you browse through all the  generated files : templates, values ... and try to understand how it works ? 
-- Create a new application for dev purpose: 
+- Create a new argocd application for dev purpose: 
   - Fork this repo and create a branch ha: `git switch -c ha`
-  - Update your application to point to your own github repo
+  - Update your argocd application to point to your own github repo
 - Update charts to go an HA apps: 1 commit/push per update
   - Set replicas to 3 with `{{ .Values.replicas . }}` and put an entry in `values.yaml` file
   - fix the antiaffitiny
+
+Extra: 
   - enable topology constraint
     - configure the number of app per node to 1: `{{ .Values.maxSkew . }}` and put an entry in `values.yaml` file
   - Create a PVC and mount it in deployments (create `pvc.yaml` in templates folder) and:
     - name: {{ include "simpleapp.fullname" . }}-pv-claim
     - storage: 1Mi (managed by `values.yaml`)
     - mount the path: `mountPath: "/usr/share/nginx/html"` in your deployment
-
-Extra
-
-- add annotations to pod and deployment
-  - if only set: `{{- if .Values.annotations }}`
-  - raw annotations: `{{- toYaml .Values.annotations | nindent ... }}` where `...` == number of spaces
+  - add annotations to pod and deployment
+    - if only set: `{{- if .Values.annotations }}`
+    - raw annotations: `{{- toYaml .Values.annotations | nindent ... }}` where `...` == number of spaces
 
 PVC sample:
 ```yaml
