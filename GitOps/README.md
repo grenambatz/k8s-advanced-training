@@ -34,7 +34,7 @@ Inside the default project, create a new application named `ui-gitops-chart`.
 
 * Enable `Auto create namespace`.
 * For the repository, indicate: `https://github.com/wescale/k8s-advanced-training.git`
-* Path: `Correction/Helm/exercice 2/sample-demo`
+* Path: `GitOps-helm/sample-demo`
 * Destination: the default cluster
 * namespace: `ui-gitops`
 
@@ -58,6 +58,8 @@ Then apply the manifest: `kubectl apply -f application.yaml`
 Look at the ArgoCD UI to view the state of your deployment.
 
 ## Clean
+
+> Clean only if you don't play next lab on gitops-helm
 
 ```sh
 kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml

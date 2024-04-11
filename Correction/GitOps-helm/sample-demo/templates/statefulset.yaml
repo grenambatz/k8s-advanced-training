@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "simpleapp.fullname" . }}
+  {{- if .Values.annotations }}
+  annotations:
+  {{- toYaml .Values.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/stack: 
+      {{ include "simpleapp.fullname" . }}
+    {{- include "simpleapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "simpleapp.fullname" . }}
+  template:
+    metadata:
+      {{- if .Values.annotations }}
+      annotations:
+      {{- toYaml .Values.annotations | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "simpleapp.fullname" . }}
+    spec:
+      {{- if .Values.topologySpreadConstraints.enabled }}
+      topologySpreadConstraints:
+        - maxSkew: {{ .Values.topologySpreadConstraints.maxSkew }}
+          topologyKey: {{ .Values.topologyKey | default "topology.kubernetes.io/zone" }}
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: {{ include "simpleapp.fullname" . }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - {{ include "simpleapp.fullname" . }}
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: {{ include "simpleapp.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.ports.containerPort }}
+              protocol: TCP
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: "/usr/share/nginx/html"
+              name: {{ include "simpleapp.fullname" . }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "simpleapp.fullname" . }}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Mi
+
