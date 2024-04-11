@@ -13,3 +13,4 @@ resources:
     cpu: "500m"
 topologySpreadConstraints:
   enabled: false
+replicas: 3
